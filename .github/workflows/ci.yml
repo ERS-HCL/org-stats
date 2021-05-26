@@ -10,6 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set Email...
+        run: git config --global user.email "tksukhu@gmail.com"
+
+      - name: Set User...
+        run: git config --global user.name "Tarun Kumar Sukhu"
+
       - name: Begin CI...
         uses: actions/checkout@v2
         with:
