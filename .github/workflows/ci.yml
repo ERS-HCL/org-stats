@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  schedule:
+    # Runs "at every day at" (see https://crontab.guru)
+    - cron: '45 17 * * *'
 
 jobs:
   build:
