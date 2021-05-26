@@ -1,15 +1,17 @@
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
+import { request, GraphQLClient } from "graphql-request";
 
 const navigation = ["Dashboard", "Team", "Projects", "Calendar", "Reports"];
 const profile = ["Your Profile", "Settings", "Sign out"];
 
-function classNames(...classes) {
+function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Example() {
+export default function Example({ data }: { data: any }) {
+  console.log(data);
   return (
     <div>
       <Disclosure as="nav" className="bg-gray-800">
@@ -201,4 +203,84 @@ export default function Example() {
       </main>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  const endpoint = "https://api.github.com/graphql";
+  const query = `query ($author: String = "ERS-HCL", $cursor: String) {
+    organization(login: $author) {
+      name
+      repos: repositories(first: 100, orderBy: {field: UPDATED_AT, direction: DESC}, after: $cursor) {
+        totalCount
+        edges {
+          cursor
+          node {
+            name
+          }
+        }
+      }
+    }
+  }`;
+
+  const variables = {
+    author: "ERS-HCL",
+    cursor: null,
+  };
+
+  const headers = {
+    authorization: `Bearer ${process.env.PAT_TOKEN}`,
+  };
+  // Run GraphQL queries/mutations using a static function
+  //request(endpoint, query, variables).then((data) => console.log(data));
+
+  // ... or create a GraphQL client instance to send requests
+  const client = new GraphQLClient(endpoint, { headers });
+  const getAllRepoStats = async (organization: any): Promise<any> => {
+    let results: any[] = [];
+
+    if (
+      organization &&
+      organization.repos &&
+      organization.repos.edges &&
+      organization.repos.edges.length > 0
+    ) {
+      const vars = {
+        ...variables,
+        cursor:
+          organization.repos.edges[organization.repos.edges.length - 1].cursor,
+      };
+      const newData = await client.request(query, vars);
+      results.push(newData.organization);
+      // if there are edges call again
+      if (newData && newData.organization.repos.edges.length > 0) {
+        return results.concat(await getAllRepoStats(newData.organization));
+      } else {
+        return results;
+      }
+    }
+    return results;
+  };
+
+  const { organization } = await client.request(query, variables);
+  let data;
+  if (organization) {
+    const result = await getAllRepoStats(organization);
+
+    // Remove empty edges
+    const extraEdges = result
+      .map((r: { repos: { edges: any } }) => r.repos.edges)
+      .filter((i: string | any[]) => i.length > 0);
+
+    data = {
+      ...organization,
+      repos: {
+        ...organization.repos,
+        edges: organization.repos.edges.concat(...extraEdges),
+      },
+    };
+  }
+
+  return {
+    props: { data }, // will be passed to the page component as props
+  };
 }
