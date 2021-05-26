@@ -2,6 +2,7 @@ import { GraphQLClient, gql } from "graphql-request";
 import { format } from "date-fns";
 import { OrgQuery_organization_repos_edges_node } from "@/generated/OrgQuery";
 import { Layout } from "@/components/Layout";
+import { DataTable } from "@/components/DataTable";
 import {
   OtherQuery_all,
   OtherQuery_css,
@@ -10,19 +11,131 @@ import {
   OtherQuery_java,
   OtherQuery_javascript,
 } from "../generated/OtherQuery";
+import { NumberRangeColumnFilter } from "@/components/filters/NumberRangeFilter";
+import { SelectColumnFilter } from "@/components/filters/SelectColumnFilter";
+import React from "react";
+import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/solid";
 
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
+export const getColumns = (): any[] => {
+  let columns: any[] = [];
+  columns = [
+    {
+      // Make an expander cell
+      Header: () => null, // No header
+      id: "expander", // It needs an ID
+      Cell: ({ row }: any) => (
+        // Use Cell to render an expander for each row.
+        // We can use the getToggleRowExpandedProps prop-getter
+        // to build the expander.
+        <span
+          {...row.getToggleRowExpandedProps()}
+          className="text-gray-700 dark:text-gray-50 hover:text-teal-900 dark:hover:text-teal-accent-400"
+        >
+          {row.isExpanded ? (
+            <ChevronDownIcon className="w-4 h-4" />
+          ) : (
+            <ChevronRightIcon className="w-4 h-4" />
+          )}
+        </span>
+      ),
+    },
+    {
+      Header: "Repository",
+      accessor: "node.name",
+      disableFilters: true,
+      // Use a two-stage aggregator here to first
+      // count the total rows being aggregated,
+      // then sum any of those counts if they are
+      // aggregated further
+      aggregate: "uniqueCount",
+      Aggregated: ({ value }: any) => `${value} repos`,
+    },
+    {
+      Header: "Language",
+      accessor: "node.primaryLanguage.name",
+      Filter: SelectColumnFilter,
+      filter: "text",
+      // Use a two-stage aggregator here to first
+      // count the total rows being aggregated,
+      // then sum any of those counts if they are
+      // aggregated further
+      aggregate: "uniqueCount",
+      Aggregated: ({ value }: any) => `${value} Languages`,
+    },
+    {
+      Header: "Stars",
+      accessor: "node.stargazers.totalCount",
+      Filter: NumberRangeColumnFilter,
+      filter: "between",
+      // Aggregate the sum of all stars
+      aggregate: "average",
+      Aggregated: ({ value }: any) => `${Math.round(value * 100) / 100} (avg)`,
+    },
+    {
+      Header: "Forks",
+      accessor: "node.forkCount",
+      disableFilters: true,
+      // Aggregate the sum of all forks
+      aggregate: "average",
+      Aggregated: ({ value }: any) => `${Math.round(value * 100) / 100} (avg)`,
+    },
+    {
+      Header: "Created On",
+      accessor: "node.createdAt",
+      disableFilters: true,
+      // Aggregate the sum of all visits
+      aggregate: "count",
+      Aggregated: ({ value }: any) => `${value} Records`,
+      Cell: ({ value }: any) => format(new Date(value), "dd/MM/yyyy"),
+    },
+    {
+      Header: "Last Update",
+      accessor: "node.updatedAt",
+      disableFilters: true,
+      // Aggregate the sum of all visits
+      aggregate: "count",
+      Aggregated: ({ value }: any) => `${value} Records`,
+      Cell: ({ value }: any) => format(new Date(value), "dd/MM/yyyy"),
+    },
+  ];
+  return columns;
+};
 
 export default function Example({ data }: { data: any }) {
-  console.log(data);
+//  console.log(data);
+  const { org } = data;
+  const columns = React.useMemo(() => getColumns(), []);
+
+  const rows = React.useMemo(() => org.edges, [org]);
+
+  const groupBy = React.useMemo(() => [], []);
+
+  const hiddenColumns = React.useMemo(() => [], []);
+
+  const renderRowSubComponent = React.useCallback(({ row }) => {
+    return (
+      <pre className="text-xs">
+        <code>{JSON.stringify({ values: row.values }, null, 2)}</code>
+      </pre>
+    );
+  }, []);
+ //console.log(rows);
   return (
-    <Layout>
+    <Layout title="Github Stats">
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* Replace with your content */}
         <div className="px-4 py-6 sm:px-0">
-          <div className="border-4 border-dashed border-gray-200 rounded-lg h-96" />
+            <DataTable
+              columns={columns}
+              data={rows}
+              // We added this as a prop for our table component
+              // Remember, this is not part of the React Table API,
+              // it's merely a rendering option we created for
+              // ourselves
+              renderRowSubComponent={renderRowSubComponent}
+              groupBy={groupBy}
+              hiddenColumns={hiddenColumns}
+            />
         </div>
         {/* /End replace */}
       </div>

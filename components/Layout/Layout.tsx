@@ -1,8 +1,8 @@
 import { FC, Fragment } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
+import { Disclosure } from "@headlessui/react";
+import { MenuIcon, XIcon } from "@heroicons/react/outline";
 
 export interface NavigationLinks {
   name: string;
@@ -15,11 +15,11 @@ const navigation: NavigationLinks[] = [
 
 // const profile = ["Your Profile", "Settings", "Sign out"];
 
-function classNames(...classes: string[]) {
+/* function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
-}
+} */
 
-export const Layout: FC<any> = ({ children }) => {
+export const Layout: FC<any> = ({ children, title }) => {
   const location = useRouter();
   return (
     <div>
@@ -193,7 +193,7 @@ export const Layout: FC<any> = ({ children }) => {
 
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
         </div>
       </header>
       <main>
