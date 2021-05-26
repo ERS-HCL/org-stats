@@ -40,8 +40,14 @@ jobs:
           CI: true
 
       - name: Build
-        run: yarn deploy
+        run: yarn build-static
         env:
           CI: true
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
