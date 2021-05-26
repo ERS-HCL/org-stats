@@ -21,7 +21,7 @@ export const SelectColumnFilter = ({
       onChange={(e) => {
         setFilter(e.target.value || undefined);
       }}
-      className="text-xs rounded border-gray-400 border dark:bg-gray-800 dark:text-gray-50 dark:border-gray-600"
+      className="text-xs rounded border-gray-400 border dark:bg-gray-800 dark:text-gray-50 dark:border-gray-600 py-1"
     >
       <option value="">All</option>
       {options.map((option, i) => (

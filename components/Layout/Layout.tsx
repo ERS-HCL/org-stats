@@ -50,10 +50,11 @@ export const Layout: FC<any> = ({ children, title }) => {
                             </div>
                           </Fragment>
                         ) : (
-                          <div className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                            <Link key={`${name}-${itemIdx}`} href={path}>
-                              {name}
-                            </Link>
+                          <div
+                            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                            key={`${name}-${itemIdx}`}
+                          >
+                            <Link href={path}>{name}</Link>
                           </div>
                         )
                       )}
