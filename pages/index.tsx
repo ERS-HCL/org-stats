@@ -1,7 +1,17 @@
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
-import { request, GraphQLClient } from "graphql-request";
+import { request, GraphQLClient, gql } from "graphql-request";
+import { format } from "date-fns";
+import { OrgQuery_organization_repos_edges_node } from "@/generated/OrgQuery";
+import {
+  OtherQuery_all,
+  OtherQuery_css,
+  OtherQuery_html,
+  OtherQuery_typescript,
+  OtherQuery_java,
+  OtherQuery_javascript,
+} from "../generated/OtherQuery";
 
 const navigation = ["Dashboard", "Team", "Projects", "Calendar", "Reports"];
 const profile = ["Your Profile", "Settings", "Sign out"];
@@ -205,23 +215,244 @@ export default function Example({ data }: { data: any }) {
   );
 }
 
-export async function getStaticProps() {
-  const endpoint = "https://api.github.com/graphql";
-  const query = `query ($author: String = "ERS-HCL", $cursor: String) {
+const orgQuery = gql`
+  query OrgQuery($author: String = "ERS-HCL", $cursor: String) {
     organization(login: $author) {
+      description
+      websiteUrl
+      avatarUrl
       name
-      repos: repositories(first: 100, orderBy: {field: UPDATED_AT, direction: DESC}, after: $cursor) {
+      repos: repositories(
+        first: 100
+        orderBy: { field: UPDATED_AT, direction: DESC }
+        after: $cursor
+      ) {
         totalCount
         edges {
           cursor
           node {
             name
+            descriptionHTML
+            licenseInfo {
+              name
+            }
+            stargazers(first: 50) {
+              totalCount
+            }
+            repositoryTopics(first: 20) {
+              edges {
+                node {
+                  topic {
+                    name
+                  }
+                }
+              }
+            }
+            forkCount
+            isFork
+            createdAt
+            updatedAt
+            pushedAt
+            homepageUrl
+            url
+            primaryLanguage {
+              name
+              color
+            }
           }
         }
       }
     }
-  }`;
+  }
+`;
 
+const otherQuery = gql`
+  query OtherQuery {
+    all: search(query: "stars:>50000", type: REPOSITORY, first: 10) {
+      repositoryCount
+      edges {
+        node {
+          ... on Repository {
+            name
+            owner {
+              login
+              avatarUrl
+            }
+            url
+            description
+            descriptionHTML
+            primaryLanguage {
+              name
+              color
+            }
+            stargazers {
+              totalCount
+            }
+          }
+        }
+      }
+    }
+    typescript: search(
+      query: "stars:>3000 language:TypeScript"
+      type: REPOSITORY
+      first: 10
+    ) {
+      repositoryCount
+      edges {
+        node {
+          ... on Repository {
+            name
+            owner {
+              login
+              avatarUrl
+            }
+            url
+            description
+            descriptionHTML
+            primaryLanguage {
+              name
+              color
+            }
+            stargazers {
+              totalCount
+            }
+          }
+        }
+      }
+    }
+    css: search(
+      query: "stars:>3000 language:CSS"
+      type: REPOSITORY
+      first: 10
+    ) {
+      repositoryCount
+      edges {
+        node {
+          ... on Repository {
+            name
+            owner {
+              login
+              avatarUrl
+            }
+            url
+            description
+            descriptionHTML
+            primaryLanguage {
+              name
+              color
+            }
+            stargazers {
+              totalCount
+            }
+          }
+        }
+      }
+    }
+    html: search(
+      query: "stars:>3000 language:HTML"
+      type: REPOSITORY
+      first: 10
+    ) {
+      repositoryCount
+      edges {
+        node {
+          ... on Repository {
+            name
+            owner {
+              login
+              avatarUrl
+            }
+            url
+            description
+            descriptionHTML
+            primaryLanguage {
+              name
+              color
+            }
+            stargazers {
+              totalCount
+            }
+          }
+        }
+      }
+    }
+    javascript: search(
+      query: "stars:>3000 language:JavaScript"
+      type: REPOSITORY
+      first: 10
+    ) {
+      repositoryCount
+      edges {
+        node {
+          ... on Repository {
+            name
+            owner {
+              login
+              avatarUrl
+            }
+            url
+            description
+            descriptionHTML
+            primaryLanguage {
+              name
+              color
+            }
+            stargazers {
+              totalCount
+            }
+          }
+        }
+      }
+    }
+    java: search(
+      query: "stars:>3000 language:Java"
+      type: REPOSITORY
+      first: 10
+    ) {
+      repositoryCount
+      edges {
+        node {
+          ... on Repository {
+            name
+            owner {
+              login
+              avatarUrl
+            }
+            url
+            description
+            descriptionHTML
+            primaryLanguage {
+              name
+              color
+            }
+            stargazers {
+              totalCount
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export interface OrgStats {
+  repositoryCount: number;
+  edges: OrgQuery_organization_repos_edges_node[];
+}
+
+export interface AllStats {
+  timestamp: string;
+  all: OtherQuery_all;
+  css: OtherQuery_css;
+  html: OtherQuery_html;
+  typescript: OtherQuery_typescript;
+  java: OtherQuery_java;
+  javascript: OtherQuery_javascript;
+  org: OrgStats;
+}
+
+export async function getStaticProps() {
+  const endpoint = "https://api.github.com/graphql";
   const variables = {
     author: "ERS-HCL",
     cursor: null,
@@ -235,6 +466,7 @@ export async function getStaticProps() {
 
   // ... or create a GraphQL client instance to send requests
   const client = new GraphQLClient(endpoint, { headers });
+
   const getAllRepoStats = async (organization: any): Promise<any> => {
     let results: any[] = [];
 
@@ -249,7 +481,7 @@ export async function getStaticProps() {
         cursor:
           organization.repos.edges[organization.repos.edges.length - 1].cursor,
       };
-      const newData = await client.request(query, vars);
+      const newData = await client.request(orgQuery, vars);
       results.push(newData.organization);
       // if there are edges call again
       if (newData && newData.organization.repos.edges.length > 0) {
@@ -261,8 +493,13 @@ export async function getStaticProps() {
     return results;
   };
 
-  const { organization } = await client.request(query, variables);
-  let data;
+  const { all, java, typescript, css, html, javascript } = await client.request(
+    otherQuery,
+    variables
+  );
+
+  const { organization } = await client.request(orgQuery, variables);
+  let data: AllStats | null = null;
   if (organization) {
     const result = await getAllRepoStats(organization);
 
@@ -272,11 +509,17 @@ export async function getStaticProps() {
       .filter((i: string | any[]) => i.length > 0);
 
     data = {
-      ...organization,
-      repos: {
-        ...organization.repos,
+      timestamp: format(new Date(), "dd MMM yyyy"),
+      org: {
+        repositoryCount: organization.repos.totalCount,
         edges: organization.repos.edges.concat(...extraEdges),
       },
+      all,
+      java,
+      typescript,
+      css,
+      html,
+      javascript,
     };
   }
 
