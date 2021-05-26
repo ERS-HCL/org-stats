@@ -153,6 +153,7 @@ const orgQuery = gql`
       repos: repositories(
         first: 100
         orderBy: { field: UPDATED_AT, direction: DESC }
+        privacy:PUBLIC
         after: $cursor
       ) {
         totalCount

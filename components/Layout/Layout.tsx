@@ -35,7 +35,7 @@ export const Layout: FC<any> = ({ children, title }) => {
                   <div className="flex-shrink-0">
                     <img
                       className="w-auto h-3"
-                      src="/org-stats/static/logo.png"
+                      src="/org-stats/static/logo_todo.png"
                       alt="Workflow"
                     />
                   </div>
