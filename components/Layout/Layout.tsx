@@ -34,8 +34,8 @@ export const Layout: FC<any> = ({ children, title }) => {
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <img
-                      className="w-auto h-3"
-                      src="/org-stats/static/logo_todo.png"
+                      className="w-auto h-14"
+                      src="/org-stats/static/TO-white.png"
                       alt="Workflow"
                     />
                   </div>
@@ -198,7 +198,9 @@ export const Layout: FC<any> = ({ children, title }) => {
         </div>
       </header>
       <main>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">{children}</div>
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 inline-flex">
+          <div className="px-4 py-6 sm:px-0">{children} </div>
+        </div>
       </main>
     </div>
   );

@@ -122,9 +122,6 @@ export default function Example({ data }: { data: any }) {
  //console.log(rows);
   return (
     <Layout title="Github Stats">
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {/* Replace with your content */}
-        <div className="px-4 py-6 sm:px-0">
             <DataTable
               columns={columns}
               data={rows}
@@ -136,9 +133,6 @@ export default function Example({ data }: { data: any }) {
               groupBy={groupBy}
               hiddenColumns={hiddenColumns}
             />
-        </div>
-        {/* /End replace */}
-      </div>
     </Layout>
   );
 }
