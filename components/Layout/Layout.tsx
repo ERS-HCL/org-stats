@@ -22,10 +22,10 @@ const navigation: NavigationLinks[] = [
 export const Layout: FC<any> = ({ children, title }) => {
   const location = useRouter();
   return (
-    <div>
+    <div className="flex flex-col h-screen">
       <Disclosure
         as="nav"
-        className="bg-gradient-to-r from-current to-blue-900 shadow-lg"
+        className="bg-gradient-to-r from-black to-blue-900 shadow-lg"
       >
         {({ open }) => (
           <>
@@ -197,11 +197,14 @@ export const Layout: FC<any> = ({ children, title }) => {
           <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
         </div>
       </header>
-      <main>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 flex-1">
+      <main className="flex-1">
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 flex-1 ">
           <div className="px-4 py-6 sm:px-0 overflow-y-auto">{children} </div>
         </div>
       </main>
+      <div className="text-gray-100 bg-gradient-to-r from-black to-blue-900 text-center align-middle items-center text-xs border-t p-2">
+        HCL ERS TechOffice 2021
+      </div>
     </div>
   );
 };

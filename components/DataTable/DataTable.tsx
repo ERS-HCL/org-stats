@@ -165,13 +165,13 @@ export const DataTable = ({
 
   // Render the UI for your table
   return (
-    <div className="min-w-full rounded-lg border shadow-md">
+    <div className="min-w-full rounded-md border shadow-md">
       <table
         {...getTableProps()}
-        className="min-w-full divide-y divide-gray-200 shadow-md"
+        className="min-w-full divide-y divide-gray-200 rounded-lg shadow-md"
       >
-        <thead className="bg-gray-100 dark:bg-gray-800">
-          <tr>
+        <thead className="bg-gray-100 dark:bg-gray-800 rounded-t-lg">
+          <tr className="rounded-t-lg">
             <th
               colSpan={visibleColumns.length}
               className="px-4 py-3 text-left text-xs text-gray-700 border-b"
