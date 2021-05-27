@@ -198,8 +198,8 @@ export const Layout: FC<any> = ({ children, title }) => {
         </div>
       </header>
       <main>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 inline-flex">
-          <div className="px-4 py-6 sm:px-0">{children} </div>
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 flex-1">
+          <div className="px-4 py-6 sm:px-0 overflow-y-auto">{children} </div>
         </div>
       </main>
     </div>
