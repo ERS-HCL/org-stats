@@ -138,6 +138,7 @@ export const DataTable = ({
     state: { pageIndex, pageSize, globalFilter },
     preGlobalFilteredRows,
     setGlobalFilter,
+    setHiddenColumns,
     exportData,
   } = useTable(
     {
@@ -158,9 +159,13 @@ export const DataTable = ({
     useExportData
   ) as any;
 
+  React.useEffect(() => {
+    setHiddenColumns(hiddenColumns);
+  }, [hiddenColumns]);
+
   // Render the UI for your table
   return (
-    <>
+    <div className="min-w-full rounded-lg border shadow-md">
       <table
         {...getTableProps()}
         className="min-w-full divide-y divide-gray-200 shadow-md"
@@ -425,6 +430,6 @@ export const DataTable = ({
           </tr>
         </tfoot>
       </table>
-    </>
+    </div>
   );
 };
