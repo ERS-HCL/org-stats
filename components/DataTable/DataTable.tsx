@@ -165,16 +165,16 @@ export const DataTable = ({
 
   // Render the UI for your table
   return (
-    <div className="min-w-full rounded-md border shadow-md">
+    <div className="min-w-full rounded-lg border shadow-">
       <table
         {...getTableProps()}
         className="min-w-full divide-y divide-gray-200 rounded-lg shadow-md"
       >
         <thead className="bg-gray-100 dark:bg-gray-800 rounded-t-lg">
-          <tr className="rounded-t-lg">
+          <tr>
             <th
               colSpan={visibleColumns.length}
-              className="px-4 py-3 text-left text-xs text-gray-700 border-b"
+              className="px-4 py-3 text-left text-xs text-gray-700 border-b rounded-t-lg"
             >
               <div className="px-4 flex flex-row-reverse text-xs text-gray-700">
                 <button
@@ -278,7 +278,7 @@ export const DataTable = ({
                     return (
                       <td
                         {...cell.getCellProps()}
-                        className={`px-6 py-4 whitespace-nowrap ${
+                        className={`px-4 py-4 whitespace-nowrap ${
                           cell.isGrouped
                             ? "bg-blue-400 text-gray-700 dark:text-gray-800"
                             : cell.isAggregated
@@ -346,13 +346,13 @@ export const DataTable = ({
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan={visibleColumns.length}>
+            <td colSpan={visibleColumns.length} className="rounded-b-lg">
               {/* 
         Pagination can be built however you'd like. 
         This is just a very basic UI implementation:
       */}
-              <div className="bg-white dark:bg-gray-700 px-4 py-3 w-full flex items-center justify-between border-gray-200">
-                <div className="flex flex-row flex-1 items-center justify-evenly w-full">
+              <div className="bg-white dark:bg-gray-700 px-4 py-3 w-full flex items-center justify-between border-gray-200 rounded-b-lg">
+                <div className="flex flex-row flex-1 items-center justify-evenly w-full ">
                   <div className="flex">
                     <button
                       onClick={() => gotoPage(0)}

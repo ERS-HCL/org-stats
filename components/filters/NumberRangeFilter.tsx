@@ -16,7 +16,7 @@ export const NumberRangeColumnFilter = ({
   }, [id, preFilteredRows]);
 
   return (
-    <div className="flex flex-wrap text-gray-700 dark:text-blue-400 text-xs justify-center align-middle text-center items-center">
+    <div className="flex flex-wrap text-gray-700 dark:text-blue-400 text-xs justify-start align-middle text-center items-center">
       <input
         value={filterValue[0] || ""}
         type="number"
