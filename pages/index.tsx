@@ -17,6 +17,7 @@ import { NumberRangeColumnFilter } from "@/components/filters/NumberRangeFilter"
 import { SelectColumnFilter } from "@/components/filters/SelectColumnFilter";
 import { orgQuery, otherQuery } from "@/helpers/queries";
 import { useMediaQuery } from "@/helpers/useMediaQuery";
+import { OrgStatsView } from "@/components/OrgStatsView";
 
 export const getColumns = (): any[] => {
   let columns: any[] = [];
@@ -99,6 +100,37 @@ export const getColumns = (): any[] => {
       Aggregated: ({ value }: any) => `${value} Records`,
       Cell: ({ value }: any) => format(new Date(value), "dd/MM/yyyy"),
     },
+    {
+      Header: "License Info",
+      accessor: "node.licenseInfo.name",
+      disableFilters: true,
+    },
+    {
+      Header: "Tags",
+      accessor: "node.repositoryTopics.edges",
+      Cell: ({ value }: any) => "",
+      disableFilters: true,
+    },
+    {
+      Header: "URL",
+      accessor: "node.url",
+      disableFilters: true,
+    },
+    {
+      Header: "Language Color",
+      accessor: "node.primaryLanguage.color",
+      disableFilters: true,
+    },
+    {
+      Header: "Is Fork",
+      accessor: "node.isFork",
+      disableFilters: true,
+    },
+    {
+      Header: "Project Description",
+      accessor: "node.descriptionHTML",
+      disableFilters: true,
+    },
   ];
   return columns;
 };
@@ -109,20 +141,35 @@ export default function Example({ data }: { data: any }) {
   const isMD = useMediaQuery("(min-width: 620px)");
   const [hiddenColumns, setHiddenColumns] = React.useState<any[]>([]);
   const { org, timestamp } = data;
-  console.log(org, timestamp);
+  // console.log(org, timestamp);
   const columns = React.useMemo(() => getColumns(), []);
 
   const rows = React.useMemo(() => org.edges, [org]);
 
   const groupBy = React.useMemo(() => [], []);
 
-  // const hiddenColumns = React.useMemo(() => isPageWide?[]:["node.createdAt","node.updatedAt"], [isPageWide]);
-
   React.useEffect(() => {
     if (isLG) {
-      setHiddenColumns([]);
+      setHiddenColumns([
+        "node.licenseInfo.name",
+        "node.url",
+        "node.primaryLanguage.color",
+        "node.isFork",
+        "node.descriptionHTML",
+        "node.repositoryTopics.edges",
+      ]);
     } else if (isMD) {
-      setHiddenColumns(["node.createdAt", "node.updatedAt", "node.forkCount"]);
+      setHiddenColumns([
+        "node.createdAt",
+        "node.updatedAt",
+        "node.forkCount",
+        "node.licenseInfo.name",
+        "node.url",
+        "node.primaryLanguage.color",
+        "node.isFork",
+        "node.descriptionHTML",
+        "node.repositoryTopics.edges",
+      ]);
     } else {
       setHiddenColumns([
         "node.createdAt",
@@ -130,20 +177,25 @@ export default function Example({ data }: { data: any }) {
         "node.forkCount",
         "node.stargazers.totalCount",
         "node.primaryLanguage.name",
+        "node.licenseInfo.name",
+        "node.url",
+        "node.primaryLanguage.color",
+        "node.isFork",
+        "node.descriptionHTML",
+        "node.repositoryTopics.edges",
       ]);
     }
   }, [isLG, isMD]);
 
   const renderRowSubComponent = React.useCallback(({ row }) => {
-    return (
-      <pre className="text-xs">
-        <code>{JSON.stringify({ values: row.values }, null, 2)}</code>
-      </pre>
-    );
+    return <OrgStatsView row={row} />;
   }, []);
   //console.log(rows);
   return (
-    <Layout title="Github Stats">
+    <Layout
+      title="Github Stats"
+      subTitle={`Public Repositories as of ${timestamp}`}
+    >
       <DataTable
         columns={columns}
         data={rows}
